@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country Guides — Japa App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body data-page="countries">
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo"><div class="logo-icon">J</div>Japa App</a>
+    <div class="navbar-nav">
+      <a href="agents.html">Find Agents</a>
+      <a href="countries.html" class="active">Country Guides</a>
+      <a href="community.html">Community</a>
+      <a href="checklist.html">My Checklist</a>
+    </div>
+    <div class="navbar-actions">
+      <a href="#" class="btn btn-outline btn-sm">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary btn-sm">Sign Up Free</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Country Guides</h1>
+    <p>Expert-reviewed, always up-to-date relocation guides for 32+ countries. Visa requirements, costs, timelines — everything verified by immigration professionals.</p>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div style="background:white;border-bottom:1px solid var(--border);padding:20px 0;">
+  <div class="container">
+    <div style="display:flex;gap:12px;margin-bottom:14px;">
+      <div class="search-bar" style="flex:1;">
+        <span style="font-size:18px;">🔍</span>
+        <input type="text" placeholder="Search country..." id="countrySearch" oninput="filterCountries()">
+      </div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-chip active" onclick="setRegion(this,'all')">All</button>
+      <button class="filter-chip" onclick="setRegion(this,'europe')">🌍 Europe</button>
+      <button class="filter-chip" onclick="setRegion(this,'americas')">🌎 Americas</button>
+      <button class="filter-chip" onclick="setRegion(this,'oceania')">🌏 Oceania</button>
+      <button class="filter-chip" onclick="setRegion(this,'middle-east')">🕌 Middle East</button>
+      <button class="filter-chip" onclick="setRegion(this,'africa')">🌍 Africa</button>
+    </div>
+  </div>
+</div>
+
+<div class="section-sm">
+  <div class="container">
+
+    <!-- COST CALCULATOR -->
+    <div class="panel" style="margin-bottom:32px;background:var(--blue-light);border-color:#c7def7;">
+      <div class="calc-layout" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;">
+        <div>
+          <div class="section-eyebrow">Relocation Cost Calculator</div>
+          <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">How much will it cost to Japa?</h2>
+          <p style="font-size:14px;color:var(--gray);margin-bottom:16px;">Get a personalised estimate based on your destination and situation.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <select id="calc-country" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:14px;background:white;" onchange="calcCost()">
+              <option value="">Select destination country</option>
+              <option value="canada">Canada</option>
+              <option value="uk">United Kingdom</option>
+              <option value="germany">Germany</option>
+              <option value="usa">United States</option>
+              <option value="australia">Australia</option>
+              <option value="uae">UAE</option>
+            </select>
+            <select id="calc-type" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:14px;background:white;" onchange="calcCost()">
+              <option value="">Select visa type</option>
+              <option value="work">Work Visa</option>
+              <option value="study">Study / Student</option>
+              <option value="pr">Permanent Residency</option>
+              <option value="family">Family Reunification</option>
+            </select>
+          </div>
+        </div>
+        <div id="calc-result" style="display:none;">
+          <div style="background:white;border-radius:12px;padding:20px;border:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;">Estimated Costs</div>
+            <div id="calc-breakdown" style="display:flex;flex-direction:column;gap:10px;"></div>
+            <div style="border-top:2px solid var(--border);margin-top:14px;padding-top:14px;">
+              <div style="display:flex;justify-content:space-between;font-weight:800;">
+                <span>Total Estimate</span>
+                <span id="calc-total" style="color:var(--blue);"></span>
+              </div>
+              <div style="font-size:12px;color:var(--gray);margin-top:6px;">*Estimate only. Actual costs vary. Find a verified agent for a precise quote.</div>
+            </div>
+            <a href="agents.html" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;">Find an Agent →</a>
+          </div>
+        </div>
+        <div id="calc-placeholder" style="text-align:center;padding:20px;color:var(--gray);">
+          <div style="font-size:48px;margin-bottom:8px;">🧮</div>
+          <div style="font-size:14px;">Select your destination and visa type to see cost estimates</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COUNTRY GRID -->
+    <div style="font-size:15px;color:var(--gray);margin-bottom:20px;">Showing <strong id="country-count" style="color:var(--dark);">12</strong> countries</div>
+    <div class="grid-4" id="country-grid">
+
+      <div class="country-card" data-region="americas" onclick="openCountry('canada')">
+        <div class="country-flag">🇨🇦</div>
+        <div class="country-body">
+          <div class="country-name">Canada</div>
+          <div class="country-sub">Express Entry · PNP · Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">6–12 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦350k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#F59E0B;">●●●</span><span style="color:var(--gray);">●●</span> Moderate</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="europe" onclick="openCountry('uk')">
+        <div class="country-flag">🇬🇧</div>
+        <div class="country-body">
+          <div class="country-name">United Kingdom</div>
+          <div class="country-sub">Skilled Worker · Health & Care · Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">3–8 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦280k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#F59E0B;">●●●</span><span style="color:var(--gray);">●●</span> Moderate</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="europe" onclick="openCountry('germany')">
+        <div class="country-flag">🇩🇪</div>
+        <div class="country-body">
+          <div class="country-name">Germany</div>
+          <div class="country-sub">Job Seeker · EU Blue Card · Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">4–9 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦220k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#F59E0B;">●●</span><span style="color:var(--gray);">●●●</span> Moderate</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="americas" onclick="openCountry('usa')">
+        <div class="country-flag">🇺🇸</div>
+        <div class="country-body">
+          <div class="country-name">United States</div>
+          <div class="country-sub">H-1B · EB-2 · O-1 · F-1 Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">6–24 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦450k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#C0392B;">●●●●●</span> Hard</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="oceania" onclick="openCountry('australia')">
+        <div class="country-flag">🇦🇺</div>
+        <div class="country-body">
+          <div class="country-name">Australia</div>
+          <div class="country-sub">482 TSS · 189 · 190 · Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">5–12 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦320k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#F59E0B;">●●●</span><span style="color:var(--gray);">●●</span> Moderate</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="middle-east" onclick="openCountry('uae')">
+        <div class="country-flag">🇦🇪</div>
+        <div class="country-body">
+          <div class="country-name">UAE</div>
+          <div class="country-sub">Work Permit · Golden Visa · Freelance</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">1–3 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦180k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:var(--green);">●●</span><span style="color:var(--gray);">●●●</span> Easy</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="europe" onclick="openCountry('ireland')">
+        <div class="country-flag">🇮🇪</div>
+        <div class="country-body">
+          <div class="country-name">Ireland</div>
+          <div class="country-sub">Critical Skills · Study · General Employment</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">3–6 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦260k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#F59E0B;">●●●</span><span style="color:var(--gray);">●●</span> Moderate</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="europe" onclick="openCountry('netherlands')">
+        <div class="country-flag">🇳🇱</div>
+        <div class="country-body">
+          <div class="country-name">Netherlands</div>
+          <div class="country-sub">Highly Skilled · Orientation · Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">3–6 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦240k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#F59E0B;">●●●</span><span style="color:var(--gray);">●●</span> Moderate</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="europe" onclick="openCountry('finland')">
+        <div class="country-flag">🇫🇮</div>
+        <div class="country-body">
+          <div class="country-name">Finland</div>
+          <div class="country-sub">Work-based · D Visa · Study</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">3–8 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦200k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:var(--green);">●●</span><span style="color:var(--gray);">●●●</span> Easy</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="africa" onclick="openCountry('southafrica')">
+        <div class="country-flag">🇿🇦</div>
+        <div class="country-body">
+          <div class="country-name">South Africa</div>
+          <div class="country-sub">Critical Skills · General Work</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">2–5 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦120k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:var(--green);">●●</span><span style="color:var(--gray);">●●●</span> Easy</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="europe" onclick="openCountry('portugal')">
+        <div class="country-flag">🇵🇹</div>
+        <div class="country-body">
+          <div class="country-name">Portugal</div>
+          <div class="country-sub">D7 · Digital Nomad · Job Seeker</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">3–6 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦190k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:var(--green);">●●</span><span style="color:var(--gray);">●●●</span> Easy</div>
+        </div>
+      </div>
+
+      <div class="country-card" data-region="americas" onclick="openCountry('canada')">
+        <div class="country-flag">🇨🇭</div>
+        <div class="country-body">
+          <div class="country-name">Switzerland</div>
+          <div class="country-sub">Work Permit · L/B Permit</div>
+          <div class="country-stats">
+            <div class="country-stat"><div class="country-stat-val">4–8 mo</div><div class="country-stat-key">Timeline</div></div>
+            <div class="country-stat"><div class="country-stat-val">₦300k+</div><div class="country-stat-key">Est. Cost</div></div>
+          </div>
+          <div class="country-difficulty"><span style="color:#C0392B;">●●●●</span><span style="color:var(--gray);">●</span> Hard</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- COUNTRY DETAIL MODAL -->
+<div id="country-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;overflow-y:auto;padding:20px 12px;">
+  <div class="country-modal-inner" style="background:white;border-radius:16px;max-width:680px;width:100%;margin:0 auto;box-shadow:0 24px 64px rgba(0,0,0,0.2);" id="country-modal-content">
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="padding-top:0;">
+      <span>© 2026 Japa App. All rights reserved.</span>
+      <div style="display:flex;gap:20px;">
+        <a href="index.html" style="color:rgba(255,255,255,0.6);">Home</a>
+        <a href="agents.html" style="color:rgba(255,255,255,0.6);">Find Agents</a>
+        <a href="community.html" style="color:rgba(255,255,255,0.6);">Community</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const countryData = {
+  canada: {
+    flag:'🇨🇦', name:'Canada', difficulty:'Moderate',
+    overview:'Canada is the most popular destination for Nigerian professionals. The Express Entry system is a points-based immigration pathway offering permanent residency in as little as 6 months for high-scoring candidates.',
+    visaTypes:['Express Entry (Federal Skilled Worker)','Provincial Nominee Program (PNP)','Study Permit','Spousal Sponsorship','Startup Visa'],
+    requirements:['Valid Nigerian passport (6+ months validity)','Educational credential assessment (ECA)','IELTS score (CLB 7+ for Express Entry)','Proof of funds (CAD $13,757 minimum)','Medical examination','Police clearance certificate'],
+    timeline:'6–12 months (Express Entry); 12–18 months (PNP)',
+    fees:'CAD $1,365 application fee + biometrics + medical',
+    tips:['Get your ECA done first — it takes 8–12 weeks','Improve your CRS score before applying','Apply to multiple PNP streams simultaneously','Keep your documents ready before creating your Express Entry profile'],
+    lastUpdated:'May 2026'
+  },
+  uk: {
+    flag:'🇬🇧', name:'United Kingdom', difficulty:'Moderate',
+    overview:'The UK Skilled Worker visa replaced Tier 2 and is the primary pathway for Nigerian professionals. You need a job offer from a licensed UK sponsor. Healthcare workers have a dedicated Health and Care visa.',
+    visaTypes:['Skilled Worker Visa','Health and Care Worker Visa','Student Visa','Graduate Route','Family Visas'],
+    requirements:['Job offer from UK-licensed sponsor','Certificate of Sponsorship (CoS)','English language proof (IELTS, degree, or equivalent)','Salary meets minimum threshold (£26,200+ or role-specific)','Maintenance funds (£1,270 in bank for 28 days)','Tuberculosis (TB) test certificate'],
+    timeline:'3–8 weeks after application (once CoS obtained)',
+    fees:'£719 application fee + IHS surcharge (£1,035/year) + biometrics',
+    tips:['IELTS for UKVI is different from academic IELTS — book the right one','TB test must be done at a UK-approved clinic in Nigeria','Check if your employer is on the UK\'s Register of Licensed Sponsors','SOC codes matter — confirm your job role qualifies'],
+    lastUpdated:'May 2026'
+  },
+  germany: {
+    flag:'🇩🇪', name:'Germany', difficulty:'Moderate',
+    overview:'Germany offers excellent pathways for skilled workers, especially in engineering, healthcare, and IT. The Job Seeker Visa lets you enter Germany to find a job before applying for a work permit. Free university education is a major draw for students.',
+    visaTypes:['Job Seeker Visa (6 months)','EU Blue Card','Skilled Worker Visa','Opportunity Card','Study Visa (free tuition)'],
+    requirements:['University degree recognised in Germany','German language skills (B1+ for many jobs; A1 for EU Blue Card)','Proof of funds (€1,027/month or equivalent)','APS certificate for Nigerian degree holders','Clean criminal record','Health insurance'],
+    timeline:'4–9 months from application to arrival',
+    fees:'€75 visa application fee; Recognition process varies',
+    tips:['Get your Nigerian degree recognised early — anabin database and APS Nigeria','German B1 dramatically increases your job prospects','The Opportunity Card (Chancenkarte) is new in 2024 — score-based, allows job search without a prior offer','Nursing and care roles have fast-track recognition programs'],
+    lastUpdated:'May 2026'
+  },
+  usa: {
+    flag:'🇺🇸', name:'United States', difficulty:'Hard',
+    overview:'The US has multiple visa pathways but is one of the most complex. The H-1B cap lottery makes work visas unpredictable. However, the O-1 extraordinary ability visa and EB-2 NIW offer alternatives for high achievers.',
+    visaTypes:['H-1B (cap-subject work visa)','O-1 (extraordinary ability)','EB-2 NIW (National Interest Waiver)','F-1 Student Visa','L-1 Intracompany Transfer'],
+    requirements:['US employer sponsorship (for H-1B, L-1)','Bachelor\'s degree or equivalent','STEM background helpful','For O-1: strong evidence of exceptional achievement','For F-1: I-20 from US school, financial proof'],
+    timeline:'H-1B: 1–2 years (lottery-dependent); O-1: 3–6 months',
+    fees:'H-1B employer fees: $2,000–$6,000+; Consular fees: $185',
+    tips:['H-1B lottery is random — don\'t rely solely on it','Build your profile for O-1 early: publications, awards, media coverage','EB-2 NIW is your best self-petition option with a strong case','Use a US-licensed immigration attorney — not a Nigerian "visa consultant"'],
+    lastUpdated:'May 2026'
+  },
+  australia: {
+    flag:'🇦🇺', name:'Australia', difficulty:'Moderate',
+    overview:'Australia has a strong demand for skilled workers, especially in healthcare, engineering, and IT. The points-based SkillSelect system is similar to Canada. State/territory nomination adds extra points.',
+    visaTypes:['Subclass 482 (Employer-sponsored)','Subclass 189 (Independent)','Subclass 190 (State-nominated)','Student Visa (Subclass 500)','Partner Visa'],
+    requirements:['Skills assessment from relevant authority','English test (IELTS 6.0+ or PTE)','Positive skills assessment','Health and character checks','Employer sponsorship (for 482)'],
+    timeline:'5–12 months',
+    fees:'AUD $4,640 (189/190); AUD $3,115 (482)',
+    tips:['Get your skills assessed early — it takes 3–6 months','State nomination adds 5 critical points to your score','Certain occupations are in high demand — check the Medium and Long-term Strategic Skills List','Partner and children applications are processed together'],
+    lastUpdated:'May 2026'
+  },
+  uae: {
+    flag:'🇦🇪', name:'UAE', difficulty:'Easy',
+    overview:'The UAE is one of the easiest destinations for Nigerians, especially those with employer offers. The Golden Visa offers 10-year residency for investors, entrepreneurs, and outstanding talent.',
+    visaTypes:['Employment Visa','Golden Visa (10 years)','Green Visa (5 years, self-employed)','Freelance Permit','Student Visa'],
+    requirements:['Valid passport','Employer offer letter (for employment visa)','Medical fitness certificate','Emirates ID after arrival','Educational certificates (attested)'],
+    timeline:'2–6 weeks with employer; 1–3 months for self-sponsored',
+    fees:'AED 1,000–5,000 depending on visa type',
+    tips:['Attestation of Nigerian documents is required — factor in 4–6 weeks','Dubai and Abu Dhabi have different authorities — confirm which applies','The Green Visa is excellent for freelancers and remote workers','Don\'t overstay — fines are significant and affect future applications'],
+    lastUpdated:'May 2026'
+  }
+};
+
+let activeRegion = 'all';
+function setRegion(el, region) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeRegion = region;
+  filterCountries();
+}
+function filterCountries() {
+  const q = document.getElementById('countrySearch').value.toLowerCase();
+  const cards = document.querySelectorAll('.country-card');
+  let visible = 0;
+  cards.forEach(c => {
+    const region = c.dataset.region || '';
+    const text = c.innerText.toLowerCase();
+    const rMatch = activeRegion === 'all' || region === activeRegion;
+    const qMatch = !q || text.includes(q);
+    c.style.display = rMatch && qMatch ? '' : 'none';
+    if (rMatch && qMatch) visible++;
+  });
+  document.getElementById('country-count').textContent = visible;
+}
+
+const costs = {
+  canada:  { work:['Visa application: ₦850,000','IDP/Language test: ₦120,000','ECA assessment: ₦80,000','Medical exam: ₦60,000','Settlement funds: ₦1,200,000'], total:'~₦2.3M' },
+  uk:      { work:['Visa fee + IHS: ₦1,050,000','TB test: ₦40,000','IELTS: ₦90,000','Maintenance funds: ₦200,000'], total:'~₦1.4M' },
+  germany: { work:['Visa application: ₦60,000','APS certificate: ₦80,000','Language course: ₦150,000','Proof of funds: ₦780,000'], total:'~₦1.1M' },
+  usa:     { work:['H-1B employer fees: ₦1,800,000','DS-160 fee: ₦85,000','Medical: ₦120,000','SEVIS fee: ₦130,000'], total:'~₦2.1M' },
+  australia:{ work:['Visa application: ₦2,100,000','Skills assessment: ₦180,000','Medical: ₦90,000','English test: ₦100,000'], total:'~₦2.5M' },
+  uae:     { work:['Visa stamping: ₦180,000','Medical: ₦50,000','Attestation fees: ₦80,000','Emirates ID: ₦40,000'], total:'~₦350k' },
+};
+
+function calcCost() {
+  const country = document.getElementById('calc-country').value;
+  const type = document.getElementById('calc-type').value;
+  if (!country || !type) return;
+  const data = costs[country];
+  if (!data) return;
+  document.getElementById('calc-placeholder').style.display = 'none';
+  document.getElementById('calc-result').style.display = 'block';
+  const items = data[type] || data['work'];
+  document.getElementById('calc-breakdown').innerHTML = items.map(i =>
+    `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);">
+      <span style="color:var(--gray);">${i.split(':')[0]}</span>
+      <span style="font-weight:600;">${i.split(':')[1] || ''}</span>
+    </div>`).join('');
+  document.getElementById('calc-total').textContent = data.total;
+}
+
+function openCountry(id) {
+  const d = countryData[id];
+  if (!d) return;
+  document.getElementById('country-modal-content').innerHTML = `
+    <div style="background:linear-gradient(135deg,#0f3d7a,#1A56A0);color:white;padding:28px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div style="font-size:48px;margin-bottom:8px;">${d.flag}</div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:6px;">${d.name}</h2>
+        <span class="badge badge-blue" style="background:rgba(255,255,255,0.2);color:white;">Difficulty: ${d.difficulty}</span>
+      </div>
+      <button onclick="document.getElementById('country-modal').style.display='none'" style="background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:8px 14px;font-size:18px;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:28px;">
+      <div class="alert alert-info" style="margin-bottom:20px;"><span>ℹ️</span><div><strong>Last verified:</strong> ${d.lastUpdated} by our immigration review team.</div></div>
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:10px;">Overview</h3>
+      <p style="font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:20px;">${d.overview}</p>
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:10px;">Visa Types Available</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">${d.visaTypes.map(v=>`<span class="badge badge-blue">${v}</span>`).join('')}</div>
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:10px;">Key Requirements</h3>
+      <ul style="padding-left:20px;margin-bottom:20px;">${d.requirements.map(r=>`<li style="font-size:14px;color:var(--gray);margin-bottom:6px;line-height:1.6;">${r}</li>`).join('')}</ul>
+      <div class="country-modal-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="background:var(--gray-light);border-radius:10px;padding:16px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;margin-bottom:6px;">Timeline</div>
+          <div style="font-size:15px;font-weight:700;color:var(--blue);">${d.timeline}</div>
+        </div>
+        <div style="background:var(--gray-light);border-radius:10px;padding:16px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;margin-bottom:6px;">Typical Fees</div>
+          <div style="font-size:15px;font-weight:700;color:var(--blue);">${d.fees}</div>
+        </div>
+      </div>
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:10px;">💡 Insider Tips</h3>
+      <ul style="padding-left:20px;margin-bottom:24px;">${d.tips.map(t=>`<li style="font-size:14px;color:var(--gray);margin-bottom:8px;line-height:1.6;">${t}</li>`).join('')}</ul>
+      <div style="display:flex;gap:12px;">
+        <a href="agents.html" class="btn btn-primary" style="flex:1;justify-content:center;">Find a ${d.name} Agent →</a>
+        <a href="checklist.html" class="btn btn-outline" style="flex:1;justify-content:center;">Start My Checklist</a>
+      </div>
+    </div>`;
+  document.getElementById('country-modal').style.display = 'block';
+}
+document.getElementById('country-modal').addEventListener('click', function(e){
+  if(e.target === this) this.style.display = 'none';
+});
+</script>
+
+<div class="mobile-nav-drawer" id="mobileNav">
+  <div class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel">
+    <button class="nav-close" onclick="closeMobileNav()">✕</button>
+    <a href="agents.html" id="mnav-agents">Find Agents</a>
+    <a href="countries.html" id="mnav-countries" class="active">Country Guides</a>
+    <a href="community.html" id="mnav-community">Community</a>
+    <a href="checklist.html" id="mnav-checklist">My Checklist</a>
+    <div class="mobile-nav-actions">
+      <a href="#" class="btn btn-outline" style="text-align:center;">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary" style="text-align:center;">Sign Up Free</a>
+    </div>
+  </div>
+</div>
+<script>
+function openMobileNav(){document.getElementById("mobileNav").classList.add("open");document.body.style.overflow="hidden";}
+function closeMobileNav(){document.getElementById("mobileNav").classList.remove("open");document.body.style.overflow="";}
+document.querySelector(".navbar-mobile-toggle").addEventListener("click", openMobileNav);
+</script>
+
+</body>
+</html>

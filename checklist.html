@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>My Relocation Checklist — Japa App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body data-page="checklist">
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo"><div class="logo-icon">J</div>Japa App</a>
+    <div class="navbar-nav">
+      <a href="agents.html">Find Agents</a>
+      <a href="countries.html">Country Guides</a>
+      <a href="community.html">Community</a>
+      <a href="checklist.html" class="active">My Checklist</a>
+    </div>
+    <div class="navbar-actions">
+      <a href="#" class="btn btn-outline btn-sm">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary btn-sm">Sign Up Free</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>My Relocation Checklist</h1>
+    <p>Your personalised step-by-step roadmap. Track every document, appointment, and task — from decision to departure.</p>
+  </div>
+</div>
+
+<div class="section-sm">
+  <div class="container">
+
+    <!-- SETUP PANEL -->
+    <div id="setup-panel" class="panel" style="max-width:620px;margin:0 auto 32px;">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;">🗺️ Set up your checklist</h2>
+      <p style="font-size:14px;color:var(--gray);margin-bottom:20px;">Tell us where you're going and what type of visa you're pursuing. We'll personalise your checklist instantly.</p>
+      <div class="checklist-setup-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:13px;font-weight:600;color:var(--gray);display:block;margin-bottom:6px;">Target Country</label>
+          <select id="setup-country" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:14px;">
+            <option value="">Select country</option>
+            <option value="canada">🇨🇦 Canada</option>
+            <option value="uk">🇬🇧 United Kingdom</option>
+            <option value="germany">🇩🇪 Germany</option>
+            <option value="usa">🇺🇸 United States</option>
+            <option value="australia">🇦🇺 Australia</option>
+            <option value="uae">🇦🇪 UAE</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;color:var(--gray);display:block;margin-bottom:6px;">Visa Type</label>
+          <select id="setup-visa" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:14px;">
+            <option value="">Select visa type</option>
+            <option value="work">Work Visa</option>
+            <option value="study">Study / Student</option>
+            <option value="pr">Permanent Residency</option>
+            <option value="family">Family Reunification</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;" onclick="generateChecklist()">Generate My Checklist →</button>
+    </div>
+
+    <!-- CHECKLIST MAIN -->
+    <div id="checklist-main" style="display:none;">
+      <!-- HEADER -->
+      <div class="checklist-header-actions" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
+        <div>
+          <h2 style="font-size:22px;font-weight:800;" id="checklist-title"></h2>
+          <p style="font-size:14px;color:var(--gray);margin-top:4px;" id="checklist-subtitle"></p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline btn-sm" onclick="resetChecklist()">↩ Change Destination</button>
+          <a href="agents.html" class="btn btn-primary btn-sm">Find an Agent →</a>
+        </div>
+      </div>
+
+      <!-- OVERALL PROGRESS -->
+      <div class="panel" style="margin-bottom:24px;background:var(--blue-light);border-color:#c7def7;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-weight:700;font-size:15px;">Overall Progress</div>
+          <div style="font-size:22px;font-weight:800;color:var(--blue);" id="overall-pct">0%</div>
+        </div>
+        <div class="progress-bar-wrap" style="height:10px;margin-bottom:0;">
+          <div class="progress-bar-fill" id="overall-bar" style="width:0%;background:var(--blue);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-top:8px;">
+          <span id="done-count">0 tasks completed</span>
+          <span id="remaining-count">0 remaining</span>
+        </div>
+      </div>
+
+      <div id="checklist-groups"></div>
+
+      <!-- DOCUMENT VAULT -->
+      <div class="panel" style="margin-top:24px;">
+        <div class="panel-header">
+          <h2>📂 Document Vault</h2>
+          <span class="badge badge-blue">Encrypted</span>
+        </div>
+        <div class="alert alert-info" style="margin-bottom:16px;"><span>🔒</span><div>Your documents are encrypted and only accessible by you. Premium users can share securely with their verified agent.</div></div>
+        <div class="doc-vault-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="doc-vault">
+          <div class="doc-slot" data-doc="passport" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;" onclick="uploadDoc(this,'International Passport')">
+            <div style="font-size:28px;margin-bottom:8px;">🛂</div>
+            <div style="font-size:13px;font-weight:600;">International Passport</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Tap to upload</div>
+          </div>
+          <div class="doc-slot" data-doc="birth" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;" onclick="uploadDoc(this,'Birth Certificate')">
+            <div style="font-size:28px;margin-bottom:8px;">📜</div>
+            <div style="font-size:13px;font-weight:600;">Birth Certificate</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Tap to upload</div>
+          </div>
+          <div class="doc-slot" data-doc="degree" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;" onclick="uploadDoc(this,'Degree Certificate')">
+            <div style="font-size:28px;margin-bottom:8px;">🎓</div>
+            <div style="font-size:13px;font-weight:600;">Degree Certificate</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Tap to upload</div>
+          </div>
+          <div class="doc-slot" data-doc="bank" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;" onclick="uploadDoc(this,'Bank Statement')">
+            <div style="font-size:28px;margin-bottom:8px;">🏦</div>
+            <div style="font-size:13px;font-weight:600;">Bank Statement</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Tap to upload</div>
+          </div>
+          <div class="doc-slot" data-doc="police" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;" onclick="uploadDoc(this,'Police Clearance')">
+            <div style="font-size:28px;margin-bottom:8px;">👮</div>
+            <div style="font-size:13px;font-weight:600;">Police Clearance</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Tap to upload</div>
+          </div>
+          <div class="doc-slot" data-doc="offer" style="border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;" onclick="uploadDoc(this,'Offer Letter')">
+            <div style="font-size:28px;margin-bottom:8px;">📋</div>
+            <div style="font-size:13px;font-weight:600;">Offer Letter / CoS</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Tap to upload</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPOINTMENT TRACKER -->
+      <div class="panel" style="margin-top:24px;">
+        <div class="panel-header">
+          <h2>📅 Appointment Tracker</h2>
+          <button class="btn btn-primary btn-sm" onclick="addAppointment()">+ Add Appointment</button>
+        </div>
+        <div id="appointments">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;background:var(--blue-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📋</div>
+              <div><div style="font-size:14px;font-weight:600;">IELTS Exam</div><div style="font-size:12px;color:var(--gray);">British Council Lagos · June 28, 2026</div></div>
+            </div>
+            <span class="badge badge-blue">Upcoming</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;background:var(--green-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏥</div>
+              <div><div style="font-size:14px;font-weight:600;">Medical Exam</div><div style="font-size:12px;color:var(--gray);">St. Nicholas Hospital · July 5, 2026</div></div>
+            </div>
+            <span class="badge badge-green">Booked</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border);border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;background:#FEF3C7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏛️</div>
+              <div><div style="font-size:14px;font-weight:600;">Embassy Interview</div><div style="font-size:12px;color:var(--gray);">Canadian High Commission · TBD</div></div>
+            </div>
+            <span class="badge badge-gray">Pending</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="congrats-banner" style="display:none;position:fixed;bottom:24px;right:24px;background:var(--green);color:white;border-radius:12px;padding:16px 20px;box-shadow:var(--shadow);font-weight:600;z-index:500;max-width:280px;">
+  🎉 Great progress! Keep going — you're closer than you think!
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="padding-top:0;">
+      <span>© 2026 Japa App.</span>
+      <div style="display:flex;gap:20px;"><a href="index.html" style="color:rgba(255,255,255,0.6);">Home</a><a href="agents.html" style="color:rgba(255,255,255,0.6);">Agents</a><a href="countries.html" style="color:rgba(255,255,255,0.6);">Countries</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const checklists = {
+  canada_work: {
+    title: '🇨🇦 Canada — Work Visa Checklist',
+    subtitle: 'Express Entry / Federal Skilled Worker pathway',
+    groups: [
+      { title: '📋 Phase 1: Assessment & Eligibility', items: [
+        'Check your CRS score using the IRCC CRS calculator',
+        'Get your Educational Credential Assessment (ECA) from WES or ICAS',
+        'Book and take your IELTS for General Training (target CLB 9)',
+        'Obtain proof of work experience (reference letters, pay slips)',
+        'Verify your NOC code for your occupation',
+        'Check if your occupation is in-demand in any province (PNP)',
+      ]},
+      { title: '📑 Phase 2: Documents', items: [
+        'Get your international passport (valid for at least 3 years)',
+        'Obtain your birth certificate',
+        'Get police clearance certificate from NPF',
+        'Request NYSC discharge certificate',
+        'Prepare updated CV/resume in Canadian format',
+        'Gather proof of funds (minimum CAD $13,757)',
+        'Get marriage certificate (if applicable)',
+      ]},
+      { title: '🖥️ Phase 3: Application', items: [
+        'Create your Express Entry profile on IRCC portal',
+        'Enter your pool and wait for Invitation to Apply (ITA)',
+        'Submit complete application within 60 days of ITA',
+        'Pay the application fee (CAD $1,365 + dependants)',
+        'Complete biometrics appointment',
+        'Attend medical exam at approved IRCC clinic',
+      ]},
+      { title: '✈️ Phase 4: Pre-Departure', items: [
+        'Receive COPR (Confirmation of Permanent Residence)',
+        'Book your flight to Canada',
+        'Arrange temporary accommodation for first 30 days',
+        'Research SIN, health card, and banking for newcomers',
+        'Purchase travel insurance for arrival period',
+        'Inform Japa App community of your arrival! 🎉',
+      ]},
+    ]
+  },
+  uk_work: {
+    title: '🇬🇧 UK — Skilled Worker Visa Checklist',
+    subtitle: 'Skilled Worker / Health & Care visa pathway',
+    groups: [
+      { title: '💼 Phase 1: Job Offer', items: [
+        'Secure a job offer from a UK-licensed sponsor employer',
+        'Confirm your employer is on the UK Register of Licensed Sponsors',
+        'Receive your Certificate of Sponsorship (CoS) with reference number',
+        'Verify your job meets the salary threshold (£26,200+ or going rate)',
+        'Check your SOC code maps to an eligible skilled worker role',
+      ]},
+      { title: '📋 Phase 2: Language & Medical', items: [
+        'Book IELTS for UKVI (not academic — different test!)',
+        'Achieve minimum B1 English level (CEFR)',
+        'Book TB test at UK-approved clinic in Nigeria',
+        'Attend TB test appointment and collect certificate',
+      ]},
+      { title: '📑 Phase 3: Documents', items: [
+        'Valid Nigerian passport (must cover entire visa period)',
+        'Certificate of Sponsorship reference number',
+        'Proof of English language (IELTS certificate)',
+        'TB test certificate from approved clinic',
+        'Bank statements showing £1,270 for 28 consecutive days',
+        'Degree/qualifications certificates',
+        'Recent passport-size photographs',
+      ]},
+      { title: '🖥️ Phase 4: Application', items: [
+        'Create a UKVI account at apply.visas.immigration.service.gov.uk',
+        'Complete online application form',
+        'Pay visa fee (£719) and Immigration Health Surcharge',
+        'Upload all documents digitally',
+        'Book and attend biometrics appointment in Lagos or Abuja',
+        'Track application status via UKVI portal',
+      ]},
+      { title: '✈️ Phase 5: Pre-Departure', items: [
+        'Receive BRP vignette sticker in passport',
+        'Book flight and accommodation',
+        'Collect BRP card within 10 days of arrival',
+        'Register with a GP (NHS doctor) within first week',
+        'Open UK bank account',
+      ]},
+    ]
+  },
+  germany_work: {
+    title: '🇩🇪 Germany — Job Seeker / Blue Card Checklist',
+    subtitle: 'Skilled worker / EU Blue Card pathway',
+    groups: [
+      { title: '📚 Phase 1: Recognition & Language', items: [
+        'Check if your degree is recognised in Germany (anabin database)',
+        'Apply for APS Nigeria certificate (allow 3 months)',
+        'Enrol in German language classes — target B1 minimum',
+        'Research your occupation on the Make it in Germany portal',
+        'Identify companies hiring international talent in your field',
+      ]},
+      { title: '📑 Phase 2: Documents', items: [
+        'Valid Nigerian passport',
+        'APS Nigeria certificate (mandatory for Nigerian degree holders)',
+        'Certified German translations of all documents',
+        'University degree and transcripts',
+        'CV in German Lebenslauf format',
+        'Language certificate (Goethe Institut or Telc)',
+        'Proof of funds (€1,027/month or equivalent)',
+        'Health insurance (TK, AOK, or private)',
+      ]},
+      { title: '🖥️ Phase 3: Visa Application', items: [
+        'Book appointment at German Embassy / Consulate in Lagos',
+        'Complete Visa application form (Antrag auf Erteilung eines Visums)',
+        'Pay visa application fee (€75)',
+        'Attend visa interview at German Embassy',
+        'Receive Job Seeker Visa (6 months to find a job)',
+      ]},
+      { title: '✈️ Phase 4: Arrival & Work Permit', items: [
+        'Register address at Einwohnermeldeamt (Bürgeramt) within 14 days',
+        'Open German bank account',
+        'Secure job offer from a German employer',
+        'Apply to convert Job Seeker Visa to work permit at Ausländerbehörde',
+        'Apply for Tax ID (Steueridentifikationsnummer)',
+        'Register for health insurance with employer',
+      ]},
+    ]
+  },
+};
+
+function getKey() {
+  const c = document.getElementById('setup-country').value;
+  const v = document.getElementById('setup-visa').value;
+  return c + '_' + v;
+}
+
+function generateChecklist() {
+  const key = getKey();
+  const country = document.getElementById('setup-country').value;
+  const visa = document.getElementById('setup-visa').value;
+  if (!country || !visa) { alert('Please select both a country and visa type.'); return; }
+
+  const data = checklists[key] || checklists['canada_work'];
+  document.getElementById('checklist-title').textContent = data.title;
+  document.getElementById('checklist-subtitle').textContent = data.subtitle;
+
+  const groupsEl = document.getElementById('checklist-groups');
+  groupsEl.innerHTML = '';
+  data.groups.forEach((group, gi) => {
+    const div = document.createElement('div');
+    div.className = 'checklist-group';
+    div.innerHTML = `
+      <div class="checklist-group-header">
+        <div class="checklist-group-title">${group.title}</div>
+        <div class="checklist-progress-text" id="grp-prog-${gi}">0 / ${group.items.length}</div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="grp-bar-${gi}" style="width:0%"></div></div>
+      <div class="checklist-items-${gi}">
+        ${group.items.map((item, ii) => `
+          <div class="checklist-item" id="item-${gi}-${ii}">
+            <input type="checkbox" id="chk-${gi}-${ii}" onchange="toggleItem(${gi},${ii},${group.items.length})">
+            <label for="chk-${gi}-${ii}">${item}</label>
+          </div>
+        `).join('')}
+      </div>`;
+    groupsEl.appendChild(div);
+  });
+
+  document.getElementById('setup-panel').style.display = 'none';
+  document.getElementById('checklist-main').style.display = 'block';
+  updateOverall();
+}
+
+function toggleItem(gi, ii, total) { setTimeout(autoSaveChecklist, 500);
+  const item = document.getElementById(`item-${gi}-${ii}`);
+  const checked = document.getElementById(`chk-${gi}-${ii}`).checked;
+  item.classList.toggle('done', checked);
+  // Update group progress
+  const groupItems = document.querySelectorAll(`[id^="chk-${gi}-"]`);
+  let done = 0;
+  groupItems.forEach(c => { if(c.checked) done++; });
+  document.getElementById(`grp-prog-${gi}`).textContent = `${done} / ${total}`;
+  document.getElementById(`grp-bar-${gi}`).style.width = `${(done/total)*100}%`;
+  updateOverall();
+  if (done === total) showCongrats();
+}
+
+function updateOverall() {
+  const all = document.querySelectorAll('[id^="chk-"]');
+  const done = Array.from(all).filter(c => c.checked).length;
+  const total = all.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('overall-pct').textContent = pct + '%';
+  document.getElementById('overall-bar').style.width = pct + '%';
+  document.getElementById('done-count').textContent = `${done} tasks completed`;
+  document.getElementById('remaining-count').textContent = `${total - done} remaining`;
+}
+
+function showCongrats() {
+  const banner = document.getElementById('congrats-banner');
+  banner.style.display = 'block';
+  setTimeout(() => banner.style.display = 'none', 4000);
+}
+
+function resetChecklist() {
+  document.getElementById('setup-panel').style.display = 'block';
+  document.getElementById('checklist-main').style.display = 'none';
+}
+
+function uploadDoc(el, name) {
+  el.style.borderColor = 'var(--green)';
+  el.style.background = 'var(--green-light)';
+  el.innerHTML = `<div style="font-size:28px;margin-bottom:8px;">✅</div><div style="font-size:13px;font-weight:600;color:var(--green);">${name}</div><div style="font-size:11px;color:var(--green);margin-top:4px;">Uploaded</div>`;
+}
+
+function addAppointment() {
+  const name = prompt('Appointment name:');
+  const date = prompt('Date (e.g. July 15, 2026):');
+  if (name && date) {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;';
+    div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;background:var(--blue-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📅</div><div><div style="font-size:14px;font-weight:600;">${name}</div><div style="font-size:12px;color:var(--gray);">${date}</div></div></div><span class="badge badge-blue">Upcoming</span>`;
+    document.getElementById('appointments').appendChild(div);
+  }
+}
+</script>
+
+<div class="mobile-nav-drawer" id="mobileNav">
+  <div class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel">
+    <button class="nav-close" onclick="closeMobileNav()">✕</button>
+    <a href="agents.html" id="mnav-agents">Find Agents</a>
+    <a href="countries.html" id="mnav-countries">Country Guides</a>
+    <a href="community.html" id="mnav-community">Community</a>
+    <a href="checklist.html" id="mnav-checklist" class="active">My Checklist</a>
+    <div class="mobile-nav-actions">
+      <a href="#" class="btn btn-outline" style="text-align:center;">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary" style="text-align:center;">Sign Up Free</a>
+    </div>
+  </div>
+</div>
+<script>
+function openMobileNav(){document.getElementById("mobileNav").classList.add("open");document.body.style.overflow="hidden";}
+function closeMobileNav(){document.getElementById("mobileNav").classList.remove("open");document.body.style.overflow="";}
+document.querySelector(".navbar-mobile-toggle").addEventListener("click", openMobileNav);
+</script>
+
+</body>
+</html>

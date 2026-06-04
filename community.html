@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Community — Japa App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body data-page="community">
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo"><div class="logo-icon">J</div>Japa App</a>
+    <div class="navbar-nav">
+      <a href="agents.html">Find Agents</a>
+      <a href="countries.html">Country Guides</a>
+      <a href="community.html" class="active">Community</a>
+      <a href="checklist.html">My Checklist</a>
+    </div>
+    <div class="navbar-actions">
+      <a href="#" class="btn btn-outline btn-sm">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary btn-sm">Sign Up Free</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Community</h1>
+    <p>Connect with 200,000+ Nigerians navigating the relocation journey. Ask questions, share your story, get real answers from verified relocators.</p>
+  </div>
+</div>
+
+<div class="section-sm">
+  <div class="container">
+    <div class="community-layout" style="display:grid;grid-template-columns:240px 1fr 240px;gap:24px;align-items:start;">
+
+      <!-- LEFT: CHANNELS -->
+      <div class="community-left-col">
+        <div class="panel" style="margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Channels</div>
+          <div id="channels" style="display:flex;flex-direction:column;gap:2px;">
+            <button class="channel-btn active" onclick="setChannel(this,'all')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:var(--blue-light);font-size:14px;font-weight:600;color:var(--blue);cursor:pointer;">🌍 All Posts</button>
+            <button class="channel-btn" onclick="setChannel(this,'canada')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🇨🇦 Canada</button>
+            <button class="channel-btn" onclick="setChannel(this,'uk')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🇬🇧 United Kingdom</button>
+            <button class="channel-btn" onclick="setChannel(this,'germany')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🇩🇪 Germany</button>
+            <button class="channel-btn" onclick="setChannel(this,'usa')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🇺🇸 USA</button>
+            <button class="channel-btn" onclick="setChannel(this,'australia')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🇦🇺 Australia</button>
+            <button class="channel-btn" onclick="setChannel(this,'uae')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🇦🇪 UAE</button>
+            <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+            <button class="channel-btn" onclick="setChannel(this,'success')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🎉 Success Stories</button>
+            <button class="channel-btn" onclick="setChannel(this,'scam')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">🚨 Scam Alerts</button>
+            <button class="channel-btn" onclick="setChannel(this,'documents')" style="text-align:left;padding:8px 12px;border-radius:6px;border:none;background:none;font-size:14px;color:var(--gray);cursor:pointer;">📄 Documents Help</button>
+          </div>
+        </div>
+        <div class="alert alert-warning"><span>🛡️</span><div style="font-size:12px;"><strong>Community Rules:</strong> No agent solicitations, no guaranteed visa promises, no direct payment requests. Violators are banned immediately.</div></div>
+      </div>
+
+      
+<div class="community-channels-bar" style="display:none;overflow-x:auto;gap:8px;padding-bottom:4px;margin-bottom:16px;-webkit-overflow-scrolling:touch;white-space:nowrap;">
+  <button class="filter-chip active" onclick="setChannel(this,'all')" style="display:inline-flex;">🌍 All</button>
+  <button class="filter-chip" onclick="setChannel(this,'canada')" style="display:inline-flex;">🇨🇦 Canada</button>
+  <button class="filter-chip" onclick="setChannel(this,'uk')" style="display:inline-flex;">🇬🇧 UK</button>
+  <button class="filter-chip" onclick="setChannel(this,'germany')" style="display:inline-flex;">🇩🇪 Germany</button>
+  <button class="filter-chip" onclick="setChannel(this,'usa')" style="display:inline-flex;">🇺🇸 USA</button>
+  <button class="filter-chip" onclick="setChannel(this,'success')" style="display:inline-flex;">🎉 Success</button>
+  <button class="filter-chip" onclick="setChannel(this,'scam')" style="display:inline-flex;">🚨 Scams</button>
+</div>
+
+      <!-- CENTER: POSTS -->
+      <div>
+        <div style="display:flex;gap:12px;margin-bottom:20px;">
+          <div class="search-bar" style="flex:1;">
+            <span>🔍</span>
+            <input type="text" placeholder="Search community posts..." oninput="filterPosts(this.value)">
+          </div>
+          <button class="btn btn-primary" onclick="openPostModal()">+ New Post</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="setTab(this,'trending')">🔥 Trending</div>
+          <div class="tab" onclick="setTab(this,'recent')">🕐 Recent</div>
+          <div class="tab" onclick="setTab(this,'unanswered')">❓ Unanswered</div>
+          <div class="tab" onclick="setTab(this,'verified')">✅ Verified Stories</div>
+        </div>
+
+        <div id="posts-feed" style="display:flex;flex-direction:column;gap:16px;">
+
+          <div class="post-card" data-channel="canada success">
+            <div class="post-author">
+              <div class="post-avatar">C</div>
+              <div>
+                <div class="post-author-name">Chioma O. <span class="badge badge-green" style="font-size:11px;margin-left:6px;">✓ Relocated to 🇨🇦</span></div>
+                <div class="post-author-meta">Lagos → Toronto · 3 hours ago</div>
+              </div>
+            </div>
+            <div class="post-title">Finally got my Canada PR after 14 months — here's everything I wish I knew</div>
+            <div class="post-excerpt">I'm writing this from my apartment in Toronto and I still can't believe it. This time last year I was crying after losing ₦700k to a fake agent. Japa App changed everything for me. Here's a full breakdown of my Express Entry journey, costs, mistakes, and what actually worked...</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+              <span class="badge badge-blue">Canada</span>
+              <span class="badge badge-blue">Express Entry</span>
+              <span class="badge badge-green">Success Story</span>
+            </div>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="post-stat">👍 <strong>248</strong></span>
+                <span class="post-stat">💬 <strong>67 replies</strong></span>
+                <span class="post-stat">🔖 <strong>Save</strong></span>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="openPost()">Read Full Story</button>
+            </div>
+          </div>
+
+          <div class="post-card" data-channel="scam">
+            <div class="post-author">
+              <div class="post-avatar" style="background:#C0392B;">M</div>
+              <div>
+                <div class="post-author-name">MikeFromAbuja <span class="badge badge-red" style="font-size:11px;margin-left:6px;">🚨 Scam Alert</span></div>
+                <div class="post-author-meta">Abuja · 6 hours ago</div>
+              </div>
+            </div>
+            <div class="post-title">⛔ Warning: "ProVisa Nigeria" is collecting money and disappearing — I lost ₦450,000</div>
+            <div class="post-excerpt">Please read before you fall victim. This company operating from Wuse 2, Abuja called "ProVisa Nigeria" collected consultation fees from at least 8 people I know. Their office is now locked, phones switched off. I have receipts and evidence. Do NOT engage with them...</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+              <span class="badge badge-red">Scam Alert</span>
+              <span class="badge badge-gray">Abuja</span>
+            </div>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="post-stat">👍 <strong>389</strong></span>
+                <span class="post-stat">💬 <strong>112 replies</strong></span>
+                <span class="post-stat">🚨 <strong>Reported to NIS</strong></span>
+              </div>
+              <button class="btn btn-outline btn-sm">Read More</button>
+            </div>
+          </div>
+
+          <div class="post-card" data-channel="germany documents">
+            <div class="post-author">
+              <div class="post-avatar" style="background:#0D7A3E;">A</div>
+              <div>
+                <div class="post-author-name">Adeola F. <span class="badge badge-green" style="font-size:11px;margin-left:6px;">✓ Relocated to 🇩🇪</span></div>
+                <div class="post-author-meta">Ibadan → Berlin · 1 day ago</div>
+              </div>
+            </div>
+            <div class="post-title">APS Certificate for Germany — the complete 2026 guide (took me 3 months to figure out)</div>
+            <div class="post-excerpt">If you're going to Germany, the APS certificate is mandatory for Nigerian degree holders and almost nobody explains it clearly. I spent 3 months confused and making mistakes. Here's the definitive step-by-step guide so you don't repeat mine...</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+              <span class="badge badge-blue">Germany</span>
+              <span class="badge badge-blue">Documents</span>
+              <span class="badge badge-blue">APS Certificate</span>
+            </div>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="post-stat">👍 <strong>176</strong></span>
+                <span class="post-stat">💬 <strong>43 replies</strong></span>
+                <span class="post-stat">📌 <strong>Pinned</strong></span>
+              </div>
+              <button class="btn btn-outline btn-sm">Read Guide</button>
+            </div>
+          </div>
+
+          <div class="post-card" data-channel="uk documents">
+            <div class="post-author">
+              <div class="post-avatar" style="background:#7C3AED;">T</div>
+              <div>
+                <div class="post-author-name">TobiFromIkeja</div>
+                <div class="post-author-meta">Lagos · 2 days ago</div>
+              </div>
+            </div>
+            <div class="post-title">IELTS vs PTE for UK Visa — which is easier and which score do you actually need?</div>
+            <div class="post-excerpt">I've seen a lot of wrong information circulating about this. The requirements differ depending on whether you're on Skilled Worker, Health & Care, or Student route. Let me break it down clearly with the exact CEFR levels and which test centres are fastest in Nigeria...</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+              <span class="badge badge-blue">UK</span>
+              <span class="badge badge-blue">IELTS</span>
+              <span class="badge badge-blue">Language Test</span>
+            </div>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="post-stat">👍 <strong>134</strong></span>
+                <span class="post-stat">💬 <strong>29 replies</strong></span>
+              </div>
+              <button class="btn btn-outline btn-sm">Read More</button>
+            </div>
+          </div>
+
+          <div class="post-card" data-channel="canada">
+            <div class="post-author">
+              <div class="post-avatar" style="background:#D97706;">N</div>
+              <div>
+                <div class="post-author-name">Ngozi K.</div>
+                <div class="post-author-meta">Port Harcourt · 3 days ago</div>
+              </div>
+            </div>
+            <div class="post-title">❓ I scored 468 CRS — how long should I wait for an ITA? Is it still worth applying?</div>
+            <div class="post-excerpt">My latest CRS score is 468 after adding my provincial nomination (yes I know, a PN would push it way higher but Ontario just released new draws). Anyone recently invited at this score? I keep seeing conflicting information about whether to wait or enter a draw now...</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+              <span class="badge badge-blue">Canada</span>
+              <span class="badge badge-blue">Express Entry</span>
+              <span class="badge badge-blue">CRS Score</span>
+            </div>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="post-stat">👍 <strong>28</strong></span>
+                <span class="post-stat">💬 <strong>14 replies</strong></span>
+              </div>
+              <button class="btn btn-outline btn-sm">Join Discussion</button>
+            </div>
+          </div>
+
+        </div>
+        <div style="text-align:center;margin-top:24px;">
+          <button class="btn btn-outline" style="padding:14px 40px;">Load More Posts</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <div class="community-right-col" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="panel">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px;">🏆 Top Contributors</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="post-avatar" style="width:32px;height:32px;font-size:12px;background:#1A56A0;">C</div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Chioma O.</div><div style="font-size:11px;color:var(--gray);">🇨🇦 Toronto</div></div>
+              <span class="badge badge-green" style="font-size:10px;">✓ Pro</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="post-avatar" style="width:32px;height:32px;font-size:12px;background:#0D7A3E;">A</div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Adeola F.</div><div style="font-size:11px;color:var(--gray);">🇩🇪 Berlin</div></div>
+              <span class="badge badge-green" style="font-size:10px;">✓ Pro</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="post-avatar" style="width:32px;height:32px;font-size:12px;background:#7C3AED;">E</div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Emeka T.</div><div style="font-size:11px;color:var(--gray);">🇬🇧 London</div></div>
+              <span class="badge badge-green" style="font-size:10px;">✓ Pro</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px;">📊 Community Stats</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray);">Members</span><strong>204,832</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray);">Posts today</span><strong>1,247</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray);">Verified relocators</span><strong>12,440</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--gray);">Scams prevented</span><strong style="color:var(--green);">₦2.3B+</strong></div>
+          </div>
+        </div>
+        <div class="panel" style="background:linear-gradient(135deg,#0f3d7a,#1A56A0);color:white;border:none;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:8px;">🎓 Become a Mentor</div>
+          <p style="font-size:13px;opacity:0.85;margin-bottom:14px;">Already relocated? Help the next generation of Japerers by becoming a verified mentor.</p>
+          <a href="index.html#signup" class="btn btn-white btn-sm" style="width:100%;justify-content:center;">Apply to Mentor</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW POST MODAL -->
+<div id="post-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:20px;max-width:560px;width:93%;box-shadow:0 24px 64px rgba(0,0,0,0.2);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:20px;font-weight:700;">Create a Post</h2>
+      <button onclick="document.getElementById('post-modal').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">✕</button>
+    </div>
+    <div class="alert alert-warning" style="margin-bottom:16px;"><span>⚠️</span><div style="font-size:13px;">Do not share personal contact details or solicit payments. Community posts are moderated by AI + human team.</div></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <select id="post-channel-select" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:14px;">
+        <option value="">Select channel</option>
+        <option>🇨🇦 Canada</option><option>🇬🇧 UK</option><option>🇩🇪 Germany</option>
+        <option>🇺🇸 USA</option><option>🇦🇺 Australia</option><option>🎉 Success Stories</option>
+        <option>🚨 Scam Alert</option><option>📄 Documents Help</option>
+      </select>
+      <input type="text" id="post-title-input" placeholder="Post title..." style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font);">
+      <textarea id="post-content-input" placeholder="Share your experience, question, or advice..." rows="5" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font);resize:vertical;"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" id='submit-post-btn' onclick="submitPost(event)">Publish Post</button>
+      <button class="btn btn-outline" onclick="document.getElementById('post-modal').style.display='none'">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="padding-top:0;">
+      <span>© 2026 Japa App.</span>
+      <div style="display:flex;gap:20px;"><a href="index.html" style="color:rgba(255,255,255,0.6);">Home</a><a href="agents.html" style="color:rgba(255,255,255,0.6);">Agents</a><a href="countries.html" style="color:rgba(255,255,255,0.6);">Countries</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setChannel(btn, channel) {
+  document.querySelectorAll('.channel-btn').forEach(b => { b.style.background='none'; b.style.color='var(--gray)'; b.style.fontWeight='400'; });
+  btn.style.background='var(--blue-light)'; btn.style.color='var(--blue)'; btn.style.fontWeight='600';
+  const posts = document.querySelectorAll('.post-card');
+  posts.forEach(p => {
+    const tags = p.dataset.channel || '';
+    p.style.display = channel === 'all' || tags.includes(channel) ? '' : 'none';
+  });
+}
+function setTab(el, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function filterPosts(q) {
+  document.querySelectorAll('.post-card').forEach(p => {
+    p.style.display = !q || p.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+function openPostModal() {
+  document.getElementById('post-modal').style.display = 'flex';
+}
+function submitPost() {
+  document.getElementById('post-modal').style.display = 'none';
+  alert('✅ Your post has been submitted for review. It will appear in the community within a few minutes after passing our moderation check.');
+}
+function openPost() { alert('Sign in to read the full post and join the discussion.'); }
+</script>
+
+<div class="mobile-nav-drawer" id="mobileNav">
+  <div class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel">
+    <button class="nav-close" onclick="closeMobileNav()">✕</button>
+    <a href="agents.html" id="mnav-agents">Find Agents</a>
+    <a href="countries.html" id="mnav-countries">Country Guides</a>
+    <a href="community.html" id="mnav-community" class="active">Community</a>
+    <a href="checklist.html" id="mnav-checklist">My Checklist</a>
+    <div class="mobile-nav-actions">
+      <a href="#" class="btn btn-outline" style="text-align:center;">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary" style="text-align:center;">Sign Up Free</a>
+    </div>
+  </div>
+</div>
+<script>
+function openMobileNav(){document.getElementById("mobileNav").classList.add("open");document.body.style.overflow="hidden";}
+function closeMobileNav(){document.getElementById("mobileNav").classList.remove("open");document.body.style.overflow="";}
+document.querySelector(".navbar-mobile-toggle").addEventListener("click", openMobileNav);
+</script>
+
+</body>
+</html>

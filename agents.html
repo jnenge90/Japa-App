@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verified Agents — Japa App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</head>
+<body data-page="agents">
+
+<div class="scam-banner">
+  ⚠️ Only book agents through our secure escrow system. Never pay directly to any agent's bank account. <a href="#">Learn more →</a>
+</div>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <div class="logo-icon">J</div>
+      Japa App
+    </a>
+    <div class="navbar-nav">
+      <a href="agents.html" class="active">Find Agents</a>
+      <a href="countries.html">Country Guides</a>
+      <a href="community.html">Community</a>
+      <a href="checklist.html">My Checklist</a>
+    </div>
+    <div class="navbar-actions">
+      <a href="#" class="btn btn-outline btn-sm">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary btn-sm">Sign Up Free</a>
+    </div>
+    <button class="navbar-mobile-toggle">☰</button>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container">
+    <div class="hero-eyebrow" style="margin-bottom:16px;display:inline-flex;">🛡️ Every agent is NIS-certified, CAC-registered, and background-checked</div>
+    <h1>Find a Verified Agent</h1>
+    <p>Browse 1,200+ immigration consultants who've passed our 5-layer verification. Real reviews. Secure booking. Zero scams.</p>
+  </div>
+</div>
+
+<!-- SEARCH & FILTER -->
+<div style="background:white;border-bottom:1px solid var(--border);padding:20px 0;position:sticky;top:68px;z-index:90;">
+  <div class="container">
+    <button class="btn btn-outline btn-sm filter-toggle-btn" style="display:none;margin-bottom:12px;" onclick="document.querySelector('.agents-sidebar').classList.toggle('open')">⚙️ Filters</button>
+    <div style="display:flex;gap:12px;margin-bottom:14px;">
+      <div class="search-bar" style="flex:1;">
+        <span style="font-size:18px;">🔍</span>
+        <input type="text" placeholder="Search by name, country, or specialisation..." id="searchInput" oninput="filterAgents()">
+      </div>
+      <button class="btn btn-primary" onclick="filterAgents()">Search</button>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-chip active" onclick="setFilter(this,'all')">All Agents</button>
+      <button class="filter-chip" onclick="setFilter(this,'canada')">🇨🇦 Canada</button>
+      <button class="filter-chip" onclick="setFilter(this,'uk')">🇬🇧 UK</button>
+      <button class="filter-chip" onclick="setFilter(this,'germany')">🇩🇪 Germany</button>
+      <button class="filter-chip" onclick="setFilter(this,'usa')">🇺🇸 USA</button>
+      <button class="filter-chip" onclick="setFilter(this,'australia')">🇦🇺 Australia</button>
+      <button class="filter-chip" onclick="setFilter(this,'uae')">🇦🇪 UAE</button>
+      <button class="filter-chip" onclick="setFilter(this,'study')">📚 Study Abroad</button>
+      <button class="filter-chip" onclick="setFilter(this,'work')">💼 Work Visa</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="section-sm">
+  <div class="container">
+    <div class="agents-layout" style="display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start;">
+
+      <!-- SIDEBAR -->
+      <div class="agents-sidebar"><div class="agents-sidebar-inner">
+        <div class="panel" style="margin-bottom:16px;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:16px;">Filters</div>
+
+          <div style="margin-bottom:16px;">
+            <label style="font-size:13px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Minimum Rating</label>
+            <select style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--font);font-size:14px;" onchange="filterAgents()">
+              <option>Any rating</option>
+              <option>4.0+</option>
+              <option>4.5+</option>
+              <option>4.8+</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label style="font-size:13px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Price Range</label>
+            <select style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--font);font-size:14px;">
+              <option>Any price</option>
+              <option>Under ₦100k</option>
+              <option>₦100k – ₦300k</option>
+              <option>₦300k – ₦500k</option>
+              <option>₦500k+</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label style="font-size:13px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Visa Type</label>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Work Visa</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Study / Student</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> PR / Permanent Residency</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Family Reunification</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Investor / Business</label>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Language</label>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);" checked> English</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Yoruba</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Igbo</label>
+              <label style="font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--blue);"> Hausa</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <span>💡</span>
+          <div><strong>Tip:</strong> Use our escrow payment for every booking. Funds only release when you confirm progress.</div>
+        </div>
+      </div>
+
+      </div></div>
+      <!-- AGENT GRID -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div style="font-size:15px;color:var(--gray);">Showing <strong id="agent-count" style="color:var(--dark);">12</strong> verified agents</div>
+          <select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--font);font-size:14px;">
+            <option>Sort: Top Rated</option>
+            <option>Sort: Most Reviews</option>
+            <option>Sort: Price: Low to High</option>
+            <option>Sort: Newest</option>
+          </select>
+        </div>
+
+        <div class="grid-2" id="agents-grid">
+
+          <div class="agent-card" data-tags="canada work pr">
+            <div class="agent-verified"><span class="badge badge-green">✓ Verified</span></div>
+            <div class="agent-card-header">
+              <div class="agent-avatar">A</div>
+              <div>
+                <div class="agent-name">Adaeze Nwosu</div>
+                <div class="agent-meta">📍 Abuja · NIS Lic. #NG-2019-0421</div>
+                <div class="agent-rating"><span class="stars">★★★★★</span> 4.9 <span style="color:var(--gray);font-weight:400;">(143 reviews)</span></div>
+              </div>
+            </div>
+            <div class="agent-tags">
+              <span class="agent-tag">🇨🇦 Canada</span>
+              <span class="agent-tag">Express Entry</span>
+              <span class="agent-tag">PR</span>
+              <span class="agent-tag">Work Permit</span>
+            </div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">Licensed immigration consultant with 8 years experience. 95% success rate on Express Entry applications. Helped 300+ Nigerians settle in Canada.</p>
+            <div class="agent-price">Consultation from <strong>₦35,000</strong> · Full service from ₦280,000</div>
+            <div class="agent-actions">
+              <button class="btn btn-primary btn-sm" onclick="openBookingModal('','Adaeze Nwosu')">Book via Escrow</button>
+              <button class="btn btn-outline btn-sm">View Profile</button>
+            </div>
+          </div>
+
+          <div class="agent-card" data-tags="uk germany work study">
+            <div class="agent-verified"><span class="badge badge-green">✓ Verified</span></div>
+            <div class="agent-card-header">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#0D7A3E,#34d399);">K</div>
+              <div>
+                <div class="agent-name">Kelechi Eze</div>
+                <div class="agent-meta">📍 Lagos · NIS Lic. #NG-2017-0188</div>
+                <div class="agent-rating"><span class="stars">★★★★★</span> 4.8 <span style="color:var(--gray);font-weight:400;">(211 reviews)</span></div>
+              </div>
+            </div>
+            <div class="agent-tags">
+              <span class="agent-tag">🇬🇧 UK</span>
+              <span class="agent-tag">🇩🇪 Germany</span>
+              <span class="agent-tag">Skilled Worker</span>
+              <span class="agent-tag">Study</span>
+            </div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">Specialises in UK Skilled Worker and Germany Job Seeker visas. Former UKVI staff member. 10 years in immigration law. 400+ successful applications.</p>
+            <div class="agent-price">Consultation from <strong>₦40,000</strong> · Full service from ₦320,000</div>
+            <div class="agent-actions">
+              <button class="btn btn-primary btn-sm" onclick="openBooking('Kelechi Eze')">Book via Escrow</button>
+              <button class="btn btn-outline btn-sm">View Profile</button>
+            </div>
+          </div>
+
+          <div class="agent-card" data-tags="australia canada study">
+            <div class="agent-verified"><span class="badge badge-green">✓ Verified</span></div>
+            <div class="agent-card-header">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#7C3AED,#a78bfa);">B</div>
+              <div>
+                <div class="agent-name">Bukola Adesanya</div>
+                <div class="agent-meta">📍 Port Harcourt · NIS Lic. #NG-2020-0654</div>
+                <div class="agent-rating"><span class="stars">★★★★★</span> 4.7 <span style="color:var(--gray);font-weight:400;">(89 reviews)</span></div>
+              </div>
+            </div>
+            <div class="agent-tags">
+              <span class="agent-tag">🇦🇺 Australia</span>
+              <span class="agent-tag">🇨🇦 Canada</span>
+              <span class="agent-tag">Study Abroad</span>
+              <span class="agent-tag">Student Visa</span>
+            </div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">Education specialist helping Nigerian students get into top universities in Australia and Canada. Scholarship guidance included.</p>
+            <div class="agent-price">Consultation from <strong>₦25,000</strong> · Full service from ₦220,000</div>
+            <div class="agent-actions">
+              <button class="btn btn-primary btn-sm" onclick="openBooking('Bukola Adesanya')">Book via Escrow</button>
+              <button class="btn btn-outline btn-sm">View Profile</button>
+            </div>
+          </div>
+
+          <div class="agent-card" data-tags="usa work investor">
+            <div class="agent-verified"><span class="badge badge-green">✓ Verified</span></div>
+            <div class="agent-card-header">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#DC2626,#f87171);">T</div>
+              <div>
+                <div class="agent-name">Tokunbo Afolabi</div>
+                <div class="agent-meta">📍 Lagos · NIS Lic. #NG-2016-0099</div>
+                <div class="agent-rating"><span class="stars">★★★★★</span> 4.9 <span style="color:var(--gray);font-weight:400;">(178 reviews)</span></div>
+              </div>
+            </div>
+            <div class="agent-tags">
+              <span class="agent-tag">🇺🇸 USA</span>
+              <span class="agent-tag">H-1B</span>
+              <span class="agent-tag">O-1 Visa</span>
+              <span class="agent-tag">EB-2 NIW</span>
+            </div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">US immigration attorney with 12 years practice. Specialises in tech worker visas and National Interest Waiver (EB-2 NIW). Based in Lagos.</p>
+            <div class="agent-price">Consultation from <strong>₦50,000</strong> · Full service from ₦450,000</div>
+            <div class="agent-actions">
+              <button class="btn btn-primary btn-sm" onclick="openBooking('Tokunbo Afolabi')">Book via Escrow</button>
+              <button class="btn btn-outline btn-sm">View Profile</button>
+            </div>
+          </div>
+
+          <div class="agent-card" data-tags="germany netherlands work">
+            <div class="agent-verified"><span class="badge badge-green">✓ Verified</span></div>
+            <div class="agent-card-header">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#0891B2,#67e8f9);">F</div>
+              <div>
+                <div class="agent-name">Funmi Adeleke</div>
+                <div class="agent-meta">📍 Ibadan · NIS Lic. #NG-2021-0832</div>
+                <div class="agent-rating"><span class="stars">★★★★☆</span> 4.6 <span style="color:var(--gray);font-weight:400;">(67 reviews)</span></div>
+              </div>
+            </div>
+            <div class="agent-tags">
+              <span class="agent-tag">🇩🇪 Germany</span>
+              <span class="agent-tag">🇳🇱 Netherlands</span>
+              <span class="agent-tag">Blue Card</span>
+              <span class="agent-tag">Job Seeker</span>
+            </div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">European relocation specialist. Fluent in German. Helps engineers, nurses, and IT professionals get their EU Blue Card and job seeker visas.</p>
+            <div class="agent-price">Consultation from <strong>₦30,000</strong> · Full service from ₦260,000</div>
+            <div class="agent-actions">
+              <button class="btn btn-primary btn-sm" onclick="openBooking('Funmi Adeleke')">Book via Escrow</button>
+              <button class="btn btn-outline btn-sm">View Profile</button>
+            </div>
+          </div>
+
+          <div class="agent-card" data-tags="uae canada family">
+            <div class="agent-verified"><span class="badge badge-green">✓ Verified</span></div>
+            <div class="agent-card-header">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#D97706,#fcd34d);">O</div>
+              <div>
+                <div class="agent-name">Obinna Okafor</div>
+                <div class="agent-meta">📍 Enugu · NIS Lic. #NG-2018-0345</div>
+                <div class="agent-rating"><span class="stars">★★★★★</span> 4.8 <span style="color:var(--gray);font-weight:400;">(122 reviews)</span></div>
+              </div>
+            </div>
+            <div class="agent-tags">
+              <span class="agent-tag">🇦🇪 UAE</span>
+              <span class="agent-tag">🇨🇦 Canada</span>
+              <span class="agent-tag">Family Visa</span>
+              <span class="agent-tag">Business</span>
+            </div>
+            <p style="font-size:13px;color:var(--gray);line-height:1.6;">Family reunification and business visa expert. 9 years experience. Specialises in UAE work permits and Canada spousal sponsorship.</p>
+            <div class="agent-price">Consultation from <strong>₦28,000</strong> · Full service from ₦240,000</div>
+            <div class="agent-actions">
+              <button class="btn btn-primary btn-sm" onclick="openBooking('Obinna Okafor')">Book via Escrow</button>
+              <button class="btn btn-outline btn-sm">View Profile</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="text-align:center;margin-top:32px;">
+          <button class="btn btn-outline" style="padding:14px 40px;">Load More Agents</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div id="booking-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:24px;max-width:480px;width:92%;box-shadow:0 24px 64px rgba(0,0,0,0.2);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:20px;font-weight:700;">🔒 Book via Secure Escrow</h2>
+      <button onclick="closeBooking()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">✕</button>
+    </div>
+    <div class="alert alert-success" style="margin-bottom:16px;">
+      <span>✅</span>
+      <div>Your payment is held safely in escrow and only released when you confirm the agent has delivered.</div>
+    </div>
+    <p style="font-size:15px;margin-bottom:6px;">Booking consultation with:</p>
+    <p id="booking-agent-name" style="font-size:18px;font-weight:700;color:var(--blue);margin-bottom:20px;"></p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+      <input type="text" placeholder="Your full name" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font);">
+      <input type="email" placeholder="Email address" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font);">
+      <select style="padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font);">
+        <option>Select service type</option>
+        <option>Initial consultation (30 min)</option>
+        <option>Full visa application service</option>
+        <option>Document review only</option>
+        <option>Ongoing support package</option>
+      </select>
+      <textarea placeholder="Brief description of your situation..." rows="3" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font);resize:vertical;"></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;" id="booking-submit-btn" onclick="submitBooking(window._bookingAgentId, window._bookingAgentName)">
+      🔒 Proceed to Secure Payment
+    </button>
+    <p style="text-align:center;font-size:12px;color:var(--gray);margin-top:10px;">Powered by Paystack Escrow · 2.5% platform fee</p>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="padding-top:0;">
+      <span>© 2026 Japa App. All rights reserved.</span>
+      <div style="display:flex;gap:20px;">
+        <a href="index.html" style="color:rgba(255,255,255,0.6);">Home</a>
+        <a href="countries.html" style="color:rgba(255,255,255,0.6);">Country Guides</a>
+        <a href="community.html" style="color:rgba(255,255,255,0.6);">Community</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+let activeFilter = 'all';
+
+function setFilter(el, filter) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = filter;
+  filterAgents();
+}
+
+function filterAgents() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.agent-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const tags = card.dataset.tags || '';
+    const text = card.innerText.toLowerCase();
+    const matchesFilter = activeFilter === 'all' || tags.includes(activeFilter);
+    const matchesSearch = !q || text.includes(q);
+    if (matchesFilter && matchesSearch) { card.style.display = ''; visible++; }
+    else card.style.display = 'none';
+  });
+  document.getElementById('agent-count').textContent = visible;
+}
+
+function openBookingModal(id, name) { window._bookingAgentId=id; window._bookingAgentName=name; function openBooking(name) {
+  document.getElementById('booking-agent-name').textContent = name;
+  document.getElementById('booking-modal').style.display = 'flex';
+}
+function closeBooking() {
+  document.getElementById('booking-modal').style.display = 'none';
+}
+function confirmBooking() {
+  closeBooking();
+  alert('✅ Booking request sent! You will receive a confirmation email shortly. Your payment will be held in escrow until you confirm the service is delivered.');
+}
+</script>
+
+<div class="mobile-nav-drawer" id="mobileNav">
+  <div class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel">
+    <button class="nav-close" onclick="closeMobileNav()">✕</button>
+    <a href="agents.html" id="mnav-agents" class="active">Find Agents</a>
+    <a href="countries.html" id="mnav-countries">Country Guides</a>
+    <a href="community.html" id="mnav-community">Community</a>
+    <a href="checklist.html" id="mnav-checklist">My Checklist</a>
+    <div class="mobile-nav-actions">
+      <a href="#" class="btn btn-outline" style="text-align:center;">Log In</a>
+      <a href="index.html#signup" class="btn btn-primary" style="text-align:center;">Sign Up Free</a>
+    </div>
+  </div>
+</div>
+<script>
+function openMobileNav(){document.getElementById("mobileNav").classList.add("open");document.body.style.overflow="hidden";}
+function closeMobileNav(){document.getElementById("mobileNav").classList.remove("open");document.body.style.overflow="";}
+document.querySelector(".navbar-mobile-toggle").addEventListener("click", openMobileNav);
+</script>
+
+</body>
+</html>
